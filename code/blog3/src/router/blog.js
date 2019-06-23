@@ -1,5 +1,5 @@
 const { getList, getDetail } = require('../controller/blog')
-const { SuccssModel, ErrorModel  } = require('../model/resModel')
+const { SuccessModel, ErrorModel  } = require('../model/resModel')
 
 const handleBlogRouter = (req, res) => {
     const method = req.method
@@ -11,7 +11,7 @@ const handleBlogRouter = (req, res) => {
 
         const listData = getList(keyword, keyword)
 
-        return new SuccssModel(listData, '请求博客列表成功')
+        return new SuccessModel(listData, '请求博客列表成功')
 
     }
 
@@ -20,7 +20,7 @@ const handleBlogRouter = (req, res) => {
         const id = req.getParams.id || ''
 
         const data = getDetail(id)
-        return new SuccssModel(data, '获取博客详情成功')
+        return new SuccessModel(data, '获取博客详情成功')
     }
 
     //新建博客

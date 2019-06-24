@@ -3,8 +3,6 @@ const querystring = require('querystring')
 const handleUserRouter = require('./src/router/user')
 const handleBlogRouter = require('./src/router/blog')
 
-
-
 // 用于处理 postData
 const getPostData = (req) => {
     const promise = new Promise((resolve, reject) => {
@@ -65,8 +63,6 @@ const serverHandle = (req, res) => {
     // 处理postData
     getPostData(req).then(postData => {
         req.body = postData
-
-        
         // 处理blog 和user 路由
         // const blogData = handleBlogRouter(req, res)
         // blogResult.then(blogData => {
@@ -89,7 +85,6 @@ const serverHandle = (req, res) => {
             })
             return
         }
-      
         // const userData = handleUserRouter(req, res)
         // if (userData) {
         //     res.end(
@@ -115,7 +110,6 @@ const serverHandle = (req, res) => {
         })
         res.write("404 NOTFOUNT \n")
     })
-
-
 }
+
 module.exports = serverHandle

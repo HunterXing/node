@@ -3,11 +3,13 @@ const querystring = require('querystring')
 const handleUserRouter = require('./src/router/user')
 const handleBlogRouter = require('./src/router/blog')
 
+
+
 // 用于处理 postData
 const getPostData = (req) => {
     const promise = new Promise((resolve, reject) => {
-        console.log(req.method)
-        console.log(req.headers['content-type'])
+        // console.log(req.method)
+        // console.log(req.headers['content-type'])
         if (req.method !== 'POST') {
             resolve({})
             return
@@ -44,6 +46,21 @@ const serverHandle = (req, res) => {
     // 解析get参数
     req.getParams = querystring.parse(url.split('?')[1])
 
+
+
+    // 解析 cookie
+    req.cookie = {}
+    const cookieStr = req.headers.cookie || ''  // k1=v1;k2=v2;k3=v3;
+    cookieStr.split(';').forEach(item => {
+        if (!item) {
+            return
+        }
+        const arr = item.split('=')
+        const key = arr[0].trim()
+        const value = arr[1]
+        req.cookie[key] = value
+    });
+    console.log('req.cookie is:',req.cookie)
 
     // 处理postData
     getPostData(req).then(postData => {

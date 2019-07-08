@@ -6,6 +6,7 @@ const {
     ErrorModel
 } = require('../model/resModel')
 
+const { set } = require('../db/redis')
 
 const handleUserRouter = (req, res) => {
     const method = req.method
@@ -22,6 +23,9 @@ const handleUserRouter = (req, res) => {
                 // res.setHeader('Set-Cookie', `username=${data.username}; path=/; httpOnly; expires=${getCookieExpires()}`)
                 req.session.username = data.username
                 req.session.realname = data.realname
+                
+                // 同步到redis中
+                set(req.sessionId, req.session)
 
                 console.log('req.session is:', req.session)
                 return new SuccessModel('登陆成功')

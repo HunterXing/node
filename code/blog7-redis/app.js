@@ -2,6 +2,7 @@ const querystring = require('querystring')
 
 const handleUserRouter = require('./src/router/user')
 const handleBlogRouter = require('./src/router/blog')
+const {set, get} = require('./src/db/redis.js')
 
 // 获取 cookie 的过期时间
 const getCookieExpires = () => {
@@ -15,7 +16,7 @@ const getCookieExpires = () => {
 
 
 // session 数据
-const SESSION_DATA = {}
+// const SESSION_DATA = {}
 
 
 // 用于处理 postData
@@ -76,24 +77,48 @@ const serverHandle = (req, res) => {
     console.log('req.cookie is:', req.cookie)
 
     // 解析 session
-    let needSetCookie = false
-    let userId = req.cookie.userid
-    if (userId) {
-        if (!SESSION_DATA[userId]) {
-            SESSION_DATA[userId] = {} 
-        }
-        req.session = SESSION_DATA[userId]
-    } else {
-        needSetCookie = true
-        // userId = Date.now() + Math.random()
-        userId = `${Date.now()}_${Math.random()}`
-        SESSION_DATA[userId] = {}
-    }
-    req.session = SESSION_DATA[userId]
+    // let needSetCookie = false
+    // let userId = req.cookie.userid
+    // if (userId) {
+    //     if (!SESSION_DATA[userId]) {
+    //         SESSION_DATA[userId] = {} 
+    //     }
+    //     req.session = SESSION_DATA[userId]
+    // } else {
+    //     needSetCookie = true
+    //     // userId = Date.now() + Math.random()
+    //     userId = `${Date.now()}_${Math.random()}`
+    //     SESSION_DATA[userId] = {}
+    // }
+    // req.session = SESSION_DATA[userId]
 
+    // 解析session 使用redis
+    let userId = req.cookie.userid
+    let needSetCookie = false
+    if (!userId) {
+        needSetCookie = true
+        userId = `${Date.now()}_${Math.random()}`
+        set(userId, {})
+        console.log('进来了')
+    }
+    
+    req.sessionId = userId
+    get(req.sessionId).then(sessionData => {
+        if (sessionData == null) {
+            // 设置redis的session
+            set(req.sessionId, {})
+            // 设置session
+            req.session = {}
+        } else {
+            req.session = sessionData
+        }
+
+        // 处理 post 数据
+        return getPostData(req)
+    })
 
     // 处理postData
-    getPostData(req).then(postData => {
+   .then(postData => {
         req.body = postData
         // 处理blog 和user 路由
         // const blogData = handleBlogRouter(req, res)

@@ -16,7 +16,7 @@ const getCookieExpires = () => {
 
 // session 数据
 const SESSION_DATA = {}
-
+debugger;
 
 // 用于处理 postData
 const getPostData = (req) => {
@@ -90,6 +90,7 @@ const serverHandle = (req, res) => {
         SESSION_DATA[userId] = {}
     }
     req.session = SESSION_DATA[userId]
+    console.log('session:::', req.session)
 
 
     // 处理postData
